@@ -56,11 +56,6 @@ for dirpath, dirnames, files in os.walk(path):
             else:
                print("Skipping File. File extension not supported: " + ext)  
                continue
-            #print(flac.pprint())
-
-            #nFn = os.path.splitext(fn)[0]
-            #print(nFn)
-
             try:
                args = "-n camelot " + QuoteForPOSIX(fn)
                output = subprocess.check_output("keyfinder-cli " + args, shell=True);
