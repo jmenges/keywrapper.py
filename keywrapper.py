@@ -6,6 +6,7 @@ import os, sys
 import subprocess
 from mutagen.flac import FLAC as FLAC
 import mutagen.id3 
+import mutagen.aiff
 
 def QuoteForPOSIX(string):
     '''quote a string so it can be used as an argument in a  posix shell
@@ -46,6 +47,13 @@ for dirpath, dirnames, files in os.walk(path):
                except:
                   print("Processing failed")
                   continue
+            elif ext == ".aif":
+               try:
+                  print("Processing AIF: ", fn);
+                  aif = mutagen.aiff.AIFF(fn)
+               except:
+                  print("Processing failed")
+                  continue 
             elif ext == ".mp3":
                try:
                   print("Processing MP3: ", fn);
@@ -60,21 +68,51 @@ for dirpath, dirnames, files in os.walk(path):
                args = "-n camelot " + QuoteForPOSIX(fn)
                output = subprocess.check_output("keyfinder-cli " + args, shell=True);
                key = output.strip().decode('ascii')
+               key = "01A" if key == "1A" else key
+               key = "01B" if key == "1B" else key
+               key = "02A" if key == "2A" else key
+               key = "02B" if key == "2B" else key
+               key = "03A" if key == "3A" else key
+               key = "03B" if key == "3B" else key
+               key = "04A" if key == "4A" else key
+               key = "04B" if key == "4B" else key
+               key = "05A" if key == "5A" else key
+               key = "05B" if key == "5B" else key
+               key = "06A" if key == "6A" else key
+               key = "06B" if key == "6B" else key
+               key = "07A" if key == "7A" else key
+               key = "07B" if key == "7B" else key
+               key = "08A" if key == "8A" else key
+               key = "08B" if key == "8B" else key
+               key = "09A" if key == "9A" else key
+               key = "09B" if key == "9B" else key
+
+
                print("NewKey: " + key)
                if ext == ".flac":    
                   try:              
-                     flac['key'] = key
+                     flac['comment'] = key
                      flac.save()
                   except:          
                      print("FLAC keysave failed")
+               elif ext == ".aif":
+                  try:          
+                     frame = mutagen.id3.COMM(encoding=3, lang="eng", desc="", text=key)
+                     aif.tags.delall('COMM');
+                     aif.tags.add(frame);
+                     aif.save()
+                  except:        
+                     print("Frame: " + frame)
+                     print("AIFF keysave failed")
                elif ext == ".mp3":
                   try:          
-                     frame = mutagen.id3.TKEY(encoding=3, text=key)
+                     frame = mutagen.id3.COMM(encoding=3, lang="eng", desc="", text=key)
+                     mp3.delall('COMM');
                      mp3.add(frame)
                      mp3.save()
                   except:        
                      print("Frame: " + frame)
-                     print("Mp3 keysave failed")
+                     print("MP3 keysave failed")
 
             except:
                if fail:
