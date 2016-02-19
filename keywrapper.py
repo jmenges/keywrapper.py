@@ -86,8 +86,6 @@ for dirpath, dirnames, files in os.walk(path):
                key = "08B" if key == "8B" else key
                key = "09A" if key == "9A" else key
                key = "09B" if key == "9B" else key
-
-
                print("NewKey: " + key)
                if ext == ".flac":    
                   try:              
